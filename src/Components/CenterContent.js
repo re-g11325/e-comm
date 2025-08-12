@@ -9,13 +9,18 @@ import {
   StackDivider,
   Text,
   UnorderedList,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
 import EcommItemCard from "./EcommItemCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getglobalStoreObject, setState } from "../Stores/globalStore";
 
 function CenterContent(props) {
   // console.log("center content props", props);
 
+  const globalStore = useSelector(getglobalStoreObject);
+  const _dispatch = useDispatch();
   return (
     <Box flex="4" p="4" bg="gray.50" overflowY={"auto"}>
       <Card
@@ -23,17 +28,35 @@ function CenterContent(props) {
         border={"1px"}
         borderRight={"4px"}
         borderBottom={"4px"}
-        borderColor={
-          props.showProfile ? "black" : (props.items[0] ?? { color: "" }).color
-        }
+        borderColor={"grey"}
       >
         <CardBody>
           <Stack divider={<StackDivider />} spacing="4">
             {props.items.map((_p, _i) => (
               <EcommItemCard
-                key={_i}
+                key={_p.name}
                 {..._p}
-                isMobile={props.isMobile}
+                onAddToCart={(_details) => {
+                  //activeVariant
+                  //qty
+                  var newCart = [...(globalStore.cart ?? [])];
+
+                  for (let index = 0; index < _details.qty; index++) {
+                    var newCartItem = {
+                      ..._p,
+                      activeVariantName: _details.activeVariant.name,
+                      activeVariantPrice: _details.activeVariant.price,
+                      qty: 1,
+                    };
+                    newCart = newCart.concat(newCartItem);
+                  }
+
+                  _dispatch(
+                    setState({
+                      cart: newCart,
+                    })
+                  );
+                }}
               ></EcommItemCard>
             ))}
           </Stack>

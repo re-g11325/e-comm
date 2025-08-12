@@ -21,14 +21,18 @@ import SideDetails from "../Components/SideDetails";
 import TopNavbar from "../Components/TopNavbar";
 import MobileHandler from "../Components/MobileHandler";
 import WarningBar from "../Components/WarningBar";
+import { useDispatch, useSelector } from "react-redux";
+import { getglobalStoreObject, setState } from "../Stores/globalStore";
 
 function Dashboard() {
-  const [userData, setuserData] = React.useState({});
+  const globalStore = useSelector(getglobalStoreObject);
+  const _dispatch = useDispatch();
 
-  const [isMobile, setIsMobile] = React.useState(false);
+  //const [isMobile, setIsMobile] = React.useState(false);
   const [leftSideIsOpen, setleftSideIsOpen] = React.useState(true);
   const [rightSideIsOpen, setrightSideIsOpen] = React.useState(true);
 
+  const [allItems, setallItems] = React.useState([]);
   const [navItems, setnavItems] = React.useState([]);
   const [centerData, setcenterData] = React.useState([]);
 
@@ -36,8 +40,12 @@ function Dashboard() {
     fetch(`${process.env.PUBLIC_URL}/JsonData/items.json`)
       .then((response) => response.json())
       .then((json) => {
-        setuserData(json);
-        //read server data
+        _dispatch(
+          setState({
+            profile: json.profile,
+          })
+        );
+        setallItems(json.items);
         var navigationPaths = json.items.map((_p) => ({
           nav: _p.nav,
           color: _p.color,
@@ -60,7 +68,11 @@ function Dashboard() {
       setrightSideIsOpen(false);
       setleftSideIsOpen(false);
     }
-    setIsMobile(isMobile);
+    _dispatch(
+      setState({
+        isMobile: isMobile,
+      })
+    );
   };
 
   React.useEffect(() => {
@@ -77,7 +89,7 @@ function Dashboard() {
       <WarningBar></WarningBar>
       <TopNavbar
         onProfileClick={() => {}}
-        profile={userData.profile ?? {}}
+        profile={globalStore.profile ?? {}}
         onLeftSideOpen={() => {
           setleftSideIsOpen(true);
         }}
@@ -91,14 +103,14 @@ function Dashboard() {
         <MobileHandler
           direction="left"
           isOpen={leftSideIsOpen}
-          isMobile={isMobile}
+          isMobile={globalStore.isMobile}
           onClose={() => {
             setleftSideIsOpen(false);
           }}
         >
           <Sidebar
             onClick={(_selectedPath) => {
-              var centerDetails = userData.items.filter(
+              var centerDetails = allItems.filter(
                 (_p) => _p.nav == _selectedPath
               );
               setcenterData([]);
@@ -116,14 +128,12 @@ function Dashboard() {
             //setrightSideIsOpen(true); there you go
           }}
           showProfile={false}
-          profile={userData.profile}
-          isMobile={isMobile}
         ></CenterContent>
 
         <MobileHandler
           direction="right"
           isOpen={rightSideIsOpen}
-          isMobile={isMobile}
+          isMobile={globalStore.isMobile}
           onClose={() => {
             setrightSideIsOpen(false);
           }}

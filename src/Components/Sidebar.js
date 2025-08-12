@@ -27,7 +27,7 @@ function Sidebar(props) {
                 borderRight={"4px"}
                 borderBottom={"4px"}
                 borderColor={_p.color}
-                key={_i}
+                key={_p.nav}
                 mb="2"
                 w="full"
                 onClick={() => {

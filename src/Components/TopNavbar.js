@@ -11,8 +11,12 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getglobalStoreObject } from "../Stores/globalStore";
 
 function TopNavbar(props) {
+  const globalStore = useSelector(getglobalStoreObject);
+  const _dispatch = useDispatch();
   return (
     <Flex
       w="100%"
@@ -22,23 +26,31 @@ function TopNavbar(props) {
       p={4}
       justifyContent={"space-between"}
     >
-      <Button
-        leftIcon={<HamburgerIcon></HamburgerIcon>}
-        onClick={() => {
-          props.onLeftSideOpen();
-        }}
-      >
-        Menu
-      </Button>
+      {globalStore.isMobile ? (
+        <Button
+          leftIcon={<HamburgerIcon></HamburgerIcon>}
+          onClick={() => {
+            props.onLeftSideOpen();
+          }}
+        >
+          Menu
+        </Button>
+      ) : (
+        <></>
+      )}
 
-      <Button
-        rightIcon={<StarIcon></StarIcon>}
-        onClick={() => {
-          props.onRightSideOpen();
-        }}
-      >
-        Carrello
-      </Button>
+      {globalStore.isMobile ? (
+        <Button
+          rightIcon={<StarIcon></StarIcon>}
+          onClick={() => {
+            props.onRightSideOpen();
+          }}
+        >
+          Carrello
+        </Button>
+      ) : (
+        <></>
+      )}
     </Flex>
   );
 }

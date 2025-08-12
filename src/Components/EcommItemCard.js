@@ -5,14 +5,24 @@ import {
   Flex,
   Heading,
   Img,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Select,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import React from "react";
+import { getglobalStoreObject } from "../Stores/globalStore";
+import { useDispatch, useSelector } from "react-redux";
 
 function ItemContainer(props) {
-  return props.isMobile ? (
+  const globalStore = useSelector(getglobalStoreObject);
+  const _dispatch = useDispatch();
+
+  return globalStore.isMobile ? (
     <Box w={"100%"}>{props.children}</Box>
   ) : (
     <Flex w={"100%"}>{props.children}</Flex>
@@ -20,7 +30,10 @@ function ItemContainer(props) {
 }
 
 function EcommItemCard(props) {
-  const [activeVariant, setactiveVariant] = React.useState(0);
+  const globalStore = useSelector(getglobalStoreObject);
+  const _dispatch = useDispatch();
+
+  const [activeVariant, setactiveVariant] = React.useState({});
   const [qty, setqty] = React.useState(1);
   //const [allVariantNames, setallVariantNames] = useState(second)
 
@@ -29,18 +42,26 @@ function EcommItemCard(props) {
     // console.log("setting first time price", props.variants[0].price);
 
     return () => {};
-  }, [props.variants]);
+  }, []);
 
   return (
-    <Card>
-      <ItemContainer isMobile={props.isMobile}>
+    <Card
+      border={"1px"}
+      borderRight={"4px"}
+      borderBottom={"4px"}
+      borderColor={props.color}
+    >
+      <ItemContainer>
         {/* image */}
         <Box
           p={2}
-          w={props.isMobile ? "100%" : "40%"}
-          h={props.isMobile ? "20%" : "100%"}
+          w={globalStore.isMobile ? "100%" : "40%"}
+          h={globalStore.isMobile ? "20%" : "100%"}
         >
-          <Img src={props.imgSrc} maxH={props.isMobile ? "20Vh" : "30vh"}></Img>
+          <Img
+            src={props.imgSrc}
+            maxH={globalStore.isMobile ? "20Vh" : "30vh"}
+          ></Img>
         </Box>
         {/* core */}
         <Stack mt="6" spacing="3" p={2}>
@@ -68,10 +89,40 @@ function EcommItemCard(props) {
           </Box>
           {/* bottom part */}
           <Flex>
-            <Box flex={1}></Box>
-            <Box>
-              <Button>{activeVariant.price + " " + activeVariant.curr}</Button>
-            </Box>
+            <Flex flex={1}></Flex>
+            <Flex alignItems={"center"} flex={2}>
+              <Text>{"Quantità: "}</Text>
+              <NumberInput
+                w={"50%"}
+                defaultValue={1}
+                min={1}
+                max={20}
+                onChange={(valueString) => setqty(valueString)}
+                value={qty}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              <Button
+                border={"1px"}
+                borderRight={"4px"}
+                borderBottom={"4px"}
+                borderColor={props.color}
+                ml={2}
+                onClick={() => {
+                  props.onAddToCart({
+                    qty: qty,
+                    activeVariant: activeVariant,
+                  });
+                  setqty(1);
+                }}
+              >
+                {activeVariant.price + " " + activeVariant.curr}
+              </Button>
+            </Flex>
           </Flex>
         </Stack>
       </ItemContainer>
