@@ -10,6 +10,7 @@ import {
   Text,
   UnorderedList,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
 import EcommItemCard from "./EcommItemCard";
@@ -18,6 +19,7 @@ import { getglobalStoreObject, setState } from "../Stores/globalStore";
 
 function CenterContent(props) {
   // console.log("center content props", props);
+  const toast = useToast();
 
   const globalStore = useSelector(getglobalStoreObject);
   const _dispatch = useDispatch();
@@ -46,6 +48,7 @@ function CenterContent(props) {
                       ..._p,
                       activeVariantName: _details.activeVariant.name,
                       activeVariantPrice: _details.activeVariant.price,
+                      activeVariantCurr: _details.activeVariant.curr,
                       qty: 1,
                     };
                     newCart = newCart.concat(newCartItem);
@@ -56,6 +59,19 @@ function CenterContent(props) {
                       cart: newCart,
                     })
                   );
+                  toast({
+                    title: "Aggiunto con successo!",
+                    description:
+                      _details.qty +
+                      " " +
+                      _p.name +
+                      " aggiunt" +
+                      (_details.qty > 1 ? "i" : "o") +
+                      " al carrello",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                  });
                 }}
               ></EcommItemCard>
             ))}

@@ -23,6 +23,7 @@ import MobileHandler from "../Components/MobileHandler";
 import WarningBar from "../Components/WarningBar";
 import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject, setState } from "../Stores/globalStore";
+import ProfileVisualizer from "../Components/ProfileVisualizer";
 
 function Dashboard() {
   const globalStore = useSelector(getglobalStoreObject);
@@ -31,6 +32,7 @@ function Dashboard() {
   //const [isMobile, setIsMobile] = React.useState(false);
   const [leftSideIsOpen, setleftSideIsOpen] = React.useState(true);
   const [rightSideIsOpen, setrightSideIsOpen] = React.useState(true);
+  const [showProfile, setshowProfile] = React.useState(true);
 
   const [allItems, setallItems] = React.useState([]);
   const [navItems, setnavItems] = React.useState([]);
@@ -88,8 +90,9 @@ function Dashboard() {
     <Box minH="100vh">
       <WarningBar></WarningBar>
       <TopNavbar
-        onProfileClick={() => {}}
-        profile={globalStore.profile ?? {}}
+        onProfileClick={() => {
+          setshowProfile(true);
+        }}
         onLeftSideOpen={() => {
           setleftSideIsOpen(true);
         }}
@@ -116,19 +119,24 @@ function Dashboard() {
               setcenterData([]);
               setcenterData(centerDetails);
               setleftSideIsOpen(false);
+              setshowProfile(false);
             }}
             paths={navItems}
           ></Sidebar>
         </MobileHandler>
 
-        <CenterContent
-          items={centerData}
-          onClick={(_itemObj) => {
-            //shall we open the cart everytime we add an item? NO
-            //setrightSideIsOpen(true); there you go
-          }}
-          showProfile={false}
-        ></CenterContent>
+        {showProfile && globalStore.profile ? (
+          <ProfileVisualizer></ProfileVisualizer>
+        ) : (
+          <CenterContent
+            items={centerData}
+            onClick={(_itemObj) => {
+              //shall we open the cart everytime we add an item? NO
+              //setrightSideIsOpen(true); there you go
+            }}
+            showProfile={false}
+          ></CenterContent>
+        )}
 
         <MobileHandler
           direction="right"

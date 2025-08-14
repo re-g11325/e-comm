@@ -38,7 +38,29 @@ function TopNavbar(props) {
       ) : (
         <></>
       )}
+      {globalStore.profile ? (
+        <Button onClick={props.onProfileClick}>
+          <Box p={1}>
+            <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
+              <Avatar
+                name={globalStore.profile.name}
+                src={globalStore.profile.imgSrc}
+              />
 
+              {globalStore.isMobile ? (
+                <></>
+              ) : (
+                <Box>
+                  <Heading size="sm">{globalStore.profile.name}</Heading>
+                  <Text></Text>
+                </Box>
+              )}
+            </Flex>
+          </Box>
+        </Button>
+      ) : (
+        <></>
+      )}
       {globalStore.isMobile ? (
         <Button
           rightIcon={<StarIcon></StarIcon>}
