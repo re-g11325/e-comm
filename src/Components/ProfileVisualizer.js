@@ -44,7 +44,7 @@ function ProfileVisualizer(props) {
 
         <Stack p={2} pt={4}>
           <Text fontWeight={"bold"}>{"Contatti"}</Text>
-          {globalStore.profile.contactInformations.map((_info) => (
+          {(globalStore.profile.contactInformations ?? []).map((_info) => (
             <Flex key={_info.name}>
               <Text fontWeight={"semibold"}>{_info.name + ": "}</Text>
               <Text pl={1}>{_info.description}</Text>

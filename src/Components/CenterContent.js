@@ -59,6 +59,7 @@ function CenterContent(props) {
                       cart: newCart,
                     })
                   );
+
                   toast({
                     title: "Aggiunto con successo!",
                     description:
