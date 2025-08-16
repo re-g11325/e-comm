@@ -107,6 +107,9 @@ function SideDetails(props) {
                   border={"1px"}
                   borderRight={"4px"}
                   borderBottom={"4px"}
+                  onClick={() => {
+                    _dispatch(setState({ centerNavigation: "confirmOrder" }));
+                  }}
                 >
                   Completa L'ordine
                 </Button>

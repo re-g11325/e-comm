@@ -38,6 +38,7 @@ function TopNavbar(props) {
       ) : (
         <></>
       )}
+
       {globalStore.profile ? (
         <Button onClick={props.onProfileClick}>
           <Box p={1}>
@@ -61,7 +62,9 @@ function TopNavbar(props) {
       ) : (
         <></>
       )}
-      {globalStore.isMobile ? (
+
+      {globalStore.isMobile &&
+      globalStore.centerNavigation != "confirmOrder" ? (
         <Button
           rightIcon={<StarIcon></StarIcon>}
           onClick={() => {

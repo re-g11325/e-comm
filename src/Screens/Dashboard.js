@@ -24,6 +24,7 @@ import WarningBar from "../Components/WarningBar";
 import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject, setState } from "../Stores/globalStore";
 import ProfileVisualizer from "../Components/ProfileVisualizer";
+import OrderConfirmPanel from "../Components/OrderConfirmPanel";
 
 function Dashboard() {
   const globalStore = useSelector(getglobalStoreObject);
@@ -32,7 +33,6 @@ function Dashboard() {
   //const [isMobile, setIsMobile] = React.useState(false);
   const [leftSideIsOpen, setleftSideIsOpen] = React.useState(true);
   const [rightSideIsOpen, setrightSideIsOpen] = React.useState(true);
-  const [showProfile, setshowProfile] = React.useState(true);
 
   const [allItems, setallItems] = React.useState([]);
   const [navItems, setnavItems] = React.useState([]);
@@ -45,6 +45,7 @@ function Dashboard() {
         _dispatch(
           setState({
             profile: json.profile,
+            centerNavigation: "profile",
           })
         );
         setallItems(json.items);
@@ -91,7 +92,7 @@ function Dashboard() {
       <WarningBar></WarningBar>
       <TopNavbar
         onProfileClick={() => {
-          setshowProfile(true);
+          _dispatch(setState({ centerNavigation: "profile" }));
         }}
         onLeftSideOpen={() => {
           setleftSideIsOpen(true);
@@ -119,15 +120,18 @@ function Dashboard() {
               setcenterData([]);
               setcenterData(centerDetails);
               setleftSideIsOpen(false);
-              setshowProfile(false);
+              _dispatch(setState({ centerNavigation: "items" }));
             }}
             paths={navItems}
           ></Sidebar>
         </MobileHandler>
 
-        {showProfile && globalStore.profile ? (
+        {globalStore.centerNavigation == "profile" ? (
           <ProfileVisualizer></ProfileVisualizer>
         ) : (
+          <></>
+        )}
+        {globalStore.centerNavigation == "items" ? (
           <CenterContent
             items={centerData}
             onClick={(_itemObj) => {
@@ -136,18 +140,29 @@ function Dashboard() {
             }}
             showProfile={false}
           ></CenterContent>
+        ) : (
+          <></>
+        )}
+        {globalStore.centerNavigation == "confirmOrder" ? (
+          <OrderConfirmPanel></OrderConfirmPanel>
+        ) : (
+          <></>
         )}
 
-        <MobileHandler
-          direction="right"
-          isOpen={rightSideIsOpen}
-          isMobile={globalStore.isMobile}
-          onClose={() => {
-            setrightSideIsOpen(false);
-          }}
-        >
-          <SideDetails details={[]}></SideDetails>
-        </MobileHandler>
+        {globalStore.centerNavigation != "confirmOrder" ? (
+          <MobileHandler
+            direction="right"
+            isOpen={rightSideIsOpen}
+            isMobile={globalStore.isMobile}
+            onClose={() => {
+              setrightSideIsOpen(false);
+            }}
+          >
+            <SideDetails details={[]}></SideDetails>
+          </MobileHandler>
+        ) : (
+          <></>
+        )}
       </Flex>
     </Box>
   );
