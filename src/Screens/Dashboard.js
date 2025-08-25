@@ -25,6 +25,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject, setState } from "../Stores/globalStore";
 import ProfileVisualizer from "../Components/ProfileVisualizer";
 import OrderConfirmPanel from "../Components/OrderConfirmPanel";
+import { getDocument, setApiKey, setProjectId } from "../Repos/Sanity";
+import ThanksPanel from "../Components/ThanksPanel";
 
 function Dashboard() {
   const globalStore = useSelector(getglobalStoreObject);
@@ -39,28 +41,55 @@ function Dashboard() {
   const [centerData, setcenterData] = React.useState([]);
 
   const onLoad = () => {
-    fetch(`${process.env.PUBLIC_URL}/JsonData/items.json`)
-      .then((response) => response.json())
-      .then((json) => {
-        _dispatch(
-          setState({
-            profile: json.profile,
-            centerNavigation: "profile",
-          })
-        );
-        setallItems(json.items);
-        var navigationPaths = json.items.map((_p) => ({
-          nav: _p.nav,
-          color: _p.color,
-        }));
-        navigationPaths = navigationPaths.filter(
-          (obj, index, self) =>
-            index === self.findIndex((o) => o.nav === obj.nav)
-        );
+    getDocument({ _type: "profile" }, (_profiles) => {
+      console.log("profiles ", _profiles.length);
+      var json = JSON.parse(_profiles[0].jsonString); //get the first default profile
 
-        setnavItems(navigationPaths);
-      })
-      .catch((error) => console.log("Error loading JSON:", error));
+      _dispatch(
+        setState({
+          profile: json.profile,
+          centerNavigation: "profile",
+        })
+      );
+      setallItems(json.items);
+      var navigationPaths = json.items.map((_p) => ({
+        nav: _p.nav,
+        color: _p.color,
+      }));
+      navigationPaths = navigationPaths.filter(
+        (obj, index, self) => index === self.findIndex((o) => o.nav === obj.nav)
+      );
+
+      setnavItems(navigationPaths);
+
+      //set correct connection to the client order database
+      setApiKey(json.profile.dbApiKey);
+      setProjectId(json.profile.dbId);
+    });
+
+    // fetch(`${process.env.PUBLIC_URL}/JsonData/items.json`)
+    //   .then((response) => response.json())
+    //   .then((json) => {
+
+    //     _dispatch(
+    //       setState({
+    //         profile: json.profile,
+    //         centerNavigation: "profile",
+    //       })
+    //     );
+    //     setallItems(json.items);
+    //     var navigationPaths = json.items.map((_p) => ({
+    //       nav: _p.nav,
+    //       color: _p.color,
+    //     }));
+    //     navigationPaths = navigationPaths.filter(
+    //       (obj, index, self) =>
+    //         index === self.findIndex((o) => o.nav === obj.nav)
+    //     );
+
+    //     setnavItems(navigationPaths);
+    //   })
+    //   .catch((error) => console.log("Error loading JSON:", error));
   };
 
   const checkMobile = () => {
@@ -79,6 +108,10 @@ function Dashboard() {
   };
 
   React.useEffect(() => {
+    setApiKey(
+      "sknBIYosJg0588ZEQTWD0IJN24gMzq0iDUpfxO7kCcPIjieyUjOgCrr5yYnhD0zvMlB3Jh6CQSpoVvPAEYjRmmfkCIrUQyUEyQd5Pa1mTDUJXxIoiHNnT86P0F4J71x3UZuDwFUZ1pw1vJqgLxF2SECRXNL0DS3w5wm34mkUqEFtLjtcvfEm"
+    );
+    setProjectId("2kwpmrhw");
     onLoad();
     checkMobile(); // run at mount
     window.addEventListener("resize", checkMobile);
@@ -145,6 +178,11 @@ function Dashboard() {
         )}
         {globalStore.centerNavigation == "confirmOrder" ? (
           <OrderConfirmPanel></OrderConfirmPanel>
+        ) : (
+          <></>
+        )}
+        {globalStore.centerNavigation == "thanksOrder" ? (
+          <ThanksPanel></ThanksPanel>
         ) : (
           <></>
         )}

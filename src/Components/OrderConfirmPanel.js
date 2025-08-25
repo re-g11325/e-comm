@@ -16,6 +16,7 @@ import React from "react";
 import { FaPaypal } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject, setState } from "../Stores/globalStore";
+import { createDocument } from "../Repos/Sanity";
 
 function OrderConfirmPanel() {
   const globalStore = useSelector(getglobalStoreObject);
@@ -111,8 +112,11 @@ function OrderConfirmPanel() {
                   clientAddress: clientAddress,
                   clientNotes: clientNotes,
                 };
-                //clear cart
-                _dispatch(setState({ cart: [] }));
+                createDocument(newOder, () => {
+                  _dispatch(
+                    setState({ cart: [], centerNavigation: "thanksOrder" })
+                  );
+                });
               }}
             >
               Paga con PayPal o Carta
