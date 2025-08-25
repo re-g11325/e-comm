@@ -120,7 +120,7 @@ function EcommItemCard(props) {
                   setqty(1);
                 }}
               >
-                {activeVariant.price + " " + activeVariant.curr}
+                {activeVariant.price + " " + activeVariant.currText}
               </Button>
             </Flex>
           </Flex>

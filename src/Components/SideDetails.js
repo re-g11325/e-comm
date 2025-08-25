@@ -50,7 +50,7 @@ function SideDetails(props) {
                   {"Totale: " +
                     totCartPrice +
                     " " +
-                    globalStore.cart[0].activeVariantCurr}
+                    globalStore.cart[0].activeVariantCurrText}
                 </Text>
               ) : (
                 <></>

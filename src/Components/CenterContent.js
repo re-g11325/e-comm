@@ -49,6 +49,8 @@ function CenterContent(props) {
                       activeVariantName: _details.activeVariant.name,
                       activeVariantPrice: _details.activeVariant.price,
                       activeVariantCurr: _details.activeVariant.curr,
+                      activeVariantCurrText: _details.activeVariant.currText,
+                      //
                       qty: 1,
                     };
                     newCart = newCart.concat(newCartItem);
