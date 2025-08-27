@@ -108,6 +108,7 @@ function SideDetails(props) {
                   borderRight={"4px"}
                   borderBottom={"4px"}
                   onClick={() => {
+                    props.onCartConfirm();
                     _dispatch(setState({ centerNavigation: "confirmOrder" }));
                   }}
                 >

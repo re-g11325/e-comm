@@ -13,6 +13,8 @@ import {
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject } from "../Stores/globalStore";
+import { FaHome } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function TopNavbar(props) {
   const globalStore = useSelector(getglobalStoreObject);
@@ -38,6 +40,10 @@ function TopNavbar(props) {
       ) : (
         <></>
       )}
+
+      <Link to={"/"}>
+        <Button rightIcon={<FaHome></FaHome>}>Ricerca</Button>
+      </Link>
 
       {globalStore.profile ? (
         <Button onClick={props.onProfileClick}>

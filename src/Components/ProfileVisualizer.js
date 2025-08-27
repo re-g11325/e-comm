@@ -31,7 +31,11 @@ function ProfileVisualizer(props) {
         {/* profile visualization */}
         <ItemContainer>
           <Box flex={1}>
-            <Img src={globalStore.profile.imgSrc ?? ""}></Img>
+            {globalStore.profile.imgSrc ? (
+              <Img src={globalStore.profile.imgSrc ?? ""}></Img>
+            ) : (
+              <></>
+            )}
           </Box>
           <Box flex={2} divider={2} pl={3}>
             <Text fontWeight={"semibold"}>{"Benvenuti da:"}</Text>
@@ -43,7 +47,9 @@ function ProfileVisualizer(props) {
         </ItemContainer>
 
         <Stack p={2} pt={4}>
-          <Text fontWeight={"bold"}>{"Contatti"}</Text>
+          <Text fontWeight={"bold"} fontSize={"xl"}>
+            {"Contatti"}
+          </Text>
           {(globalStore.profile.contactInformations ?? []).map((_info) => (
             <Flex key={_info.name}>
               <Text fontWeight={"semibold"}>{_info.name + ": "}</Text>

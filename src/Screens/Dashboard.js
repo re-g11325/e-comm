@@ -27,8 +27,12 @@ import ProfileVisualizer from "../Components/ProfileVisualizer";
 import OrderConfirmPanel from "../Components/OrderConfirmPanel";
 import { getDocument, setApiKey, setProjectId } from "../Repos/Sanity";
 import ThanksPanel from "../Components/ThanksPanel";
+import { useParams } from "react-router-dom";
 
 function Dashboard() {
+  const params = useParams();
+  // console.log("dashboard params ", params);
+
   const globalStore = useSelector(getglobalStoreObject);
   const _dispatch = useDispatch();
 
@@ -40,9 +44,9 @@ function Dashboard() {
   const [navItems, setnavItems] = React.useState([]);
   const [centerData, setcenterData] = React.useState([]);
 
-  const onLoad = () => {
-    getDocument({ _type: "profile" }, (_profiles) => {
-      console.log("profiles ", _profiles.length);
+  const onLoad = (_profileName) => {
+    getDocument({ _type: "profile", name: _profileName }, (_profiles) => {
+      // console.log("profiles ", _profiles.length);
       var json = JSON.parse(_profiles[0].jsonString); //get the first default profile
 
       _dispatch(
@@ -112,7 +116,7 @@ function Dashboard() {
       "sknBIYosJg0588ZEQTWD0IJN24gMzq0iDUpfxO7kCcPIjieyUjOgCrr5yYnhD0zvMlB3Jh6CQSpoVvPAEYjRmmfkCIrUQyUEyQd5Pa1mTDUJXxIoiHNnT86P0F4J71x3UZuDwFUZ1pw1vJqgLxF2SECRXNL0DS3w5wm34mkUqEFtLjtcvfEm"
     );
     setProjectId("2kwpmrhw");
-    onLoad();
+    onLoad(params.profileName);
     checkMobile(); // run at mount
     window.addEventListener("resize", checkMobile);
     return () => {
@@ -196,7 +200,12 @@ function Dashboard() {
               setrightSideIsOpen(false);
             }}
           >
-            <SideDetails details={[]}></SideDetails>
+            <SideDetails
+              details={[]}
+              onCartConfirm={() => {
+                setrightSideIsOpen(false);
+              }}
+            ></SideDetails>
           </MobileHandler>
         ) : (
           <></>

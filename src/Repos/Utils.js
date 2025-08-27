@@ -22,3 +22,29 @@ export const groupAndSum = (data, groupFields, sumFields) => {
 
   return Array.from(map.values());
 };
+export const generateUniqueId = () => {
+  // Generate a random component
+  const randomPart = Math.random().toString(36).substr(2, 5);
+
+  // Get the current timestamp
+  const timestampPart = new Date().getTime().toString(36);
+
+  // Combine the random and timestamp parts
+  const uniqueId = `${timestampPart}-${randomPart}`;
+
+  return uniqueId;
+};
+export const generateUniqueOrderNum = () => {
+  // Generate a random component
+  const randomPart = Math.random(new Date().getTime())
+    .toString(10)
+    .substring(2, 7);
+
+  // Get the current timestamp
+  const timestampPart = new Date().getTime().toString(10).substring(7, 11);
+
+  // Combine the random and timestamp parts
+  const uniqueId = `${timestampPart}${randomPart}`;
+
+  return uniqueId;
+};

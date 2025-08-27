@@ -16,10 +16,13 @@ import { Card, CardBody } from "@chakra-ui/react";
 import EcommItemCard from "./EcommItemCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject, setState } from "../Stores/globalStore";
+import { generateUniqueOrderNum } from "../Repos/Utils";
 
 function CenterContent(props) {
   // console.log("center content props", props);
   const toast = useToast();
+
+  // console.log("unique order number", generateUniqueOrderNum());
 
   const globalStore = useSelector(getglobalStoreObject);
   const _dispatch = useDispatch();

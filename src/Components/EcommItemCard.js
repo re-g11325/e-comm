@@ -44,6 +44,13 @@ function EcommItemCard(props) {
     return () => {};
   }, []);
 
+  React.useEffect(() => {
+    setqty(activeVariant.minCount);
+    // console.log("setting first time price", props.variants[0].price);
+
+    return () => {};
+  }, [activeVariant]);
+
   return (
     <Card
       border={"1px"}
@@ -94,9 +101,9 @@ function EcommItemCard(props) {
               <Text>{"Quantità: "}</Text>
               <NumberInput
                 w={"50%"}
-                defaultValue={1}
-                min={1}
-                max={20}
+                defaultValue={activeVariant.minCount}
+                min={activeVariant.minCount}
+                max={activeVariant.maxCount}
                 onChange={(valueString) => setqty(valueString)}
                 value={qty}
               >
@@ -117,10 +124,13 @@ function EcommItemCard(props) {
                     qty: qty,
                     activeVariant: activeVariant,
                   });
-                  setqty(1);
+                  setqty(activeVariant.minCount);
                 }}
+                isDisabled={activeVariant.minCount < 1}
               >
-                {activeVariant.price + " " + activeVariant.currText}
+                {(activeVariant.price ?? 0) +
+                  " " +
+                  (activeVariant.currText ?? "€")}
               </Button>
             </Flex>
           </Flex>
