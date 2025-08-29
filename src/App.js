@@ -9,7 +9,7 @@ const router = createBrowserRouter([
   { path: "/", element: <Search></Search> },
   { path: "/:profileName", element: <Dashboard></Dashboard> },
   { path: "/notFound", element: <NotFound></NotFound> },
-  { path: "*", element: <NotFound></NotFound> },
+  { path: "*", element: <Search></Search> },
 ]);
 
 function App() {

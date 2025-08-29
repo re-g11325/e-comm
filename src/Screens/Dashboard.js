@@ -27,10 +27,11 @@ import ProfileVisualizer from "../Components/ProfileVisualizer";
 import OrderConfirmPanel from "../Components/OrderConfirmPanel";
 import { getDocument, setApiKey, setProjectId } from "../Repos/Sanity";
 import ThanksPanel from "../Components/ThanksPanel";
-import { useParams } from "react-router-dom";
+import { useParams, Redirect, useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const params = useParams();
+  const navigate = useNavigate();
   // console.log("dashboard params ", params);
 
   const globalStore = useSelector(getglobalStoreObject);
@@ -47,6 +48,11 @@ function Dashboard() {
   const onLoad = (_profileName) => {
     getDocument({ _type: "profile", name: _profileName }, (_profiles) => {
       // console.log("profiles ", _profiles.length);
+
+      if (_profiles.length < 1) {
+        navigate("/notFound");
+      }
+
       var json = JSON.parse(_profiles[0].jsonString); //get the first default profile
 
       _dispatch(
