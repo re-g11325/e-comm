@@ -43,30 +43,35 @@ function createSanityQuery(filterObject, fields = ["..."]) {
   }
 
   // Build the filter string based on the object's properties
-  const filters = Object.entries(filterObject)
-    .map(([key, value]) => {
-      if (typeof value === "string") {
-        return `${key} == '${value}'`;
-      } else if (typeof value === "number") {
-        return `${key} == ${value}`;
-      } else {
-        throw new Error(
-          `Unsupported value type for key ${key}: ${typeof value}`
-        );
-      }
-    })
-    .join(" && ");
+  const filters = Object.entries(filterObject).map(([key, value]) => {
+    if (typeof value === "string") {
+      // return `${key} == '${value}'`;
+      return `${key} match '*${value}*'`;
+    } else if (typeof value === "number") {
+      return `${key} == ${value}`;
+    } else {
+      throw new Error(`Unsupported value type for key ${key}: ${typeof value}`);
+    }
+  });
+
+  var joinedFilters = filters.join(" && ");
 
   // Build the fields string
   const fieldsString = fields.join(", ");
 
   // Combine the filters and fields into the query
-  const query = `*[${filters}] { ${fieldsString} }`;
+  const query = `*[${joinedFilters}] { ${fieldsString} }`;
 
   return query;
 }
-const getDocumentCommand = (_document) => {
-  return encodeURIComponent(`${createSanityQuery(_document)}`);
+const getDocumentCommand = (_document, _fields = ["..."]) => {
+  return encodeURIComponent(`${createSanityQuery(_document, _fields)}`);
+};
+const getProfilesCommand = (_document, _fields = ["..."]) => {
+  const fieldsString = _fields.join(", ");
+  return encodeURIComponent(
+    `*[ _type == '${_document._type}'   ] { ${fieldsString} }`
+  );
 };
 
 // ----- POST -----
@@ -180,9 +185,9 @@ export const updateDocument = (_document, _onSuccess) => {
     console.error("no target ");
   }
 };
-export const getDocument = (_document, _onSuccess) => {
+export const getDocument = (_document, _onSuccess, _fields = ["..."]) => {
   apiQuery(
-    queryUrl(getDocumentCommand(_document)),
+    queryUrl(getDocumentCommand(_document, _fields)),
     "get",
     undefined,
     (result) => {
@@ -190,6 +195,19 @@ export const getDocument = (_document, _onSuccess) => {
       _onSuccess(result.result);
     },
     (error) => console.error(error)
+  );
+};
+export const getProfiles = (_document, _onSuccess, _fields = ["..."]) => {
+  apiQuery(
+    queryUrl(getProfilesCommand(_document, _fields)),
+    "get",
+    undefined,
+    (result) => {
+      //let resultedUser = result.result[0];
+      console.log("result get profiles", result);
+      _onSuccess(result.result);
+    },
+    (error) => console.log("error in getProfiles ", error)
   );
 };
 export const setProjectId = (_prjID) => {

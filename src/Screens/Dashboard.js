@@ -38,8 +38,12 @@ function Dashboard() {
   const _dispatch = useDispatch();
 
   //const [isMobile, setIsMobile] = React.useState(false);
-  const [leftSideIsOpen, setleftSideIsOpen] = React.useState(true);
-  const [rightSideIsOpen, setrightSideIsOpen] = React.useState(true);
+  const [leftSideIsOpen, setleftSideIsOpen] = React.useState(
+    !globalStore.isMobile
+  );
+  const [rightSideIsOpen, setrightSideIsOpen] = React.useState(
+    !globalStore.isMobile
+  );
 
   const [allItems, setallItems] = React.useState([]);
   const [navItems, setnavItems] = React.useState([]);
@@ -102,32 +106,8 @@ function Dashboard() {
     //   .catch((error) => console.log("Error loading JSON:", error));
   };
 
-  const checkMobile = () => {
-    const isMobile = window.innerWidth <= window.innerHeight;
-    setrightSideIsOpen(true);
-    setleftSideIsOpen(true);
-    if (isMobile) {
-      setrightSideIsOpen(false);
-      setleftSideIsOpen(false);
-    }
-    _dispatch(
-      setState({
-        isMobile: isMobile,
-      })
-    );
-  };
-
   React.useEffect(() => {
-    setApiKey(
-      "sknBIYosJg0588ZEQTWD0IJN24gMzq0iDUpfxO7kCcPIjieyUjOgCrr5yYnhD0zvMlB3Jh6CQSpoVvPAEYjRmmfkCIrUQyUEyQd5Pa1mTDUJXxIoiHNnT86P0F4J71x3UZuDwFUZ1pw1vJqgLxF2SECRXNL0DS3w5wm34mkUqEFtLjtcvfEm"
-    );
-    setProjectId("2kwpmrhw");
     onLoad(params.profileName);
-    checkMobile(); // run at mount
-    window.addEventListener("resize", checkMobile);
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
   }, []);
 
   return (
