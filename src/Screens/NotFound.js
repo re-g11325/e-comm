@@ -3,6 +3,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function NotFound() {
+  React.useEffect(() => {
+    document.title = "Non Trovata";
+    return () => {};
+  }, []);
+
   return (
     <Box
       alignItems={"center"}

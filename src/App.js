@@ -7,11 +7,15 @@ import Search from "./Screens/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { getglobalStoreObject, setState } from "./Stores/globalStore";
 import React from "react";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
+import Payment from "./Screens/Payment";
 
 const router = createBrowserRouter([
   { path: "/", element: <Search></Search> },
+  { path: "/payment/:paymentMessage", element: <Payment></Payment> },
   { path: "/:profileName", element: <Dashboard></Dashboard> },
   { path: "/notFound", element: <NotFound></NotFound> },
+  { path: "/e-comm", element: <Search></Search> },
   { path: "*", element: <Search></Search> },
 ]);
 
@@ -43,7 +47,31 @@ function App() {
   }, []);
 
   // return <Dashboard></Dashboard>;
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <Box>
+      <RouterProvider router={router}></RouterProvider>
+      {globalStore.isLoading ?? false ? (
+        <Flex
+          position="fixed"
+          inset="0"
+          bg="white"
+          zIndex="overlay"
+          align="center"
+          justify="center"
+        >
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        </Flex>
+      ) : (
+        <></>
+      )}
+    </Box>
+  );
 }
 
 export default App;

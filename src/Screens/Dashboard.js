@@ -50,6 +50,11 @@ function Dashboard() {
   const [centerData, setcenterData] = React.useState([]);
 
   const onLoad = (_profileName) => {
+    _dispatch(
+      setState({
+        isLoading: true,
+      })
+    );
     getDocument({ _type: "profile", name: _profileName }, (_profiles) => {
       // console.log("profiles ", _profiles.length);
 
@@ -63,6 +68,7 @@ function Dashboard() {
         setState({
           profile: json.profile,
           centerNavigation: "profile",
+          isLoading: false,
         })
       );
       setallItems(json.items);
@@ -77,33 +83,11 @@ function Dashboard() {
       setnavItems(navigationPaths);
 
       //set correct connection to the client order database
+
+      document.title = json.profile.name;
       setApiKey(json.profile.dbApiKey);
       setProjectId(json.profile.dbId);
     });
-
-    // fetch(`${process.env.PUBLIC_URL}/JsonData/items.json`)
-    //   .then((response) => response.json())
-    //   .then((json) => {
-
-    //     _dispatch(
-    //       setState({
-    //         profile: json.profile,
-    //         centerNavigation: "profile",
-    //       })
-    //     );
-    //     setallItems(json.items);
-    //     var navigationPaths = json.items.map((_p) => ({
-    //       nav: _p.nav,
-    //       color: _p.color,
-    //     }));
-    //     navigationPaths = navigationPaths.filter(
-    //       (obj, index, self) =>
-    //         index === self.findIndex((o) => o.nav === obj.nav)
-    //     );
-
-    //     setnavItems(navigationPaths);
-    //   })
-    //   .catch((error) => console.log("Error loading JSON:", error));
   };
 
   React.useEffect(() => {

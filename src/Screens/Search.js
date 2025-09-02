@@ -34,6 +34,9 @@ function Search() {
       "sknBIYosJg0588ZEQTWD0IJN24gMzq0iDUpfxO7kCcPIjieyUjOgCrr5yYnhD0zvMlB3Jh6CQSpoVvPAEYjRmmfkCIrUQyUEyQd5Pa1mTDUJXxIoiHNnT86P0F4J71x3UZuDwFUZ1pw1vJqgLxF2SECRXNL0DS3w5wm34mkUqEFtLjtcvfEm"
     );
     setProjectId("2kwpmrhw");
+    navigate("/");
+
+    document.title = "Ricerca";
 
     //show every profile present
     return () => {};
