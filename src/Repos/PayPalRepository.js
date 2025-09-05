@@ -39,8 +39,8 @@ const getOrderDetails = (
       },
     ],
     application_context: {
-      return_url: "https://example.com/return",
-      cancel_url: "https://example.com/cancel",
+      return_url: "https://example.com", // return
+      cancel_url: "https://example.com", // cancel
     },
   };
   return orderDetail;
@@ -61,7 +61,7 @@ const generateToken = (_cliId, _key) => {
     fetch(baseUrl + "/v1/oauth2/token", requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log(" generateToken result print", result);
+        // console.log(" generateToken result print", result);
         const { access_token } = JSON.parse(result);
         resolve(access_token);
       })
@@ -86,7 +86,7 @@ const createOrder = (orderDetail, token = "") => {
     fetch(baseUrl + "/v2/checkout/orders", requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log("createOrder result print", result);
+        // console.log("createOrder result print", result);
         const res = JSON.parse(result);
         resolve(res);
       })

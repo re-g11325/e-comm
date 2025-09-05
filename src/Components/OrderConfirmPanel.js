@@ -21,6 +21,8 @@ import { getglobalStoreObject, setState } from "../Stores/globalStore";
 import { createDocument } from "../Repos/Sanity";
 import { generateUniqueId, generateUniqueOrderNum } from "../Repos/Utils";
 import PayPalRepository from "../Repos/PayPalRepository";
+import { CloseIcon } from "@chakra-ui/icons";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 function OrderConfirmPanel() {
   const toast = useToast();
@@ -32,23 +34,13 @@ function OrderConfirmPanel() {
   const [clientAddress, setclientAddress] = React.useState("");
   const [clientNotes, setclientNotes] = React.useState("");
 
-  const [webUrl, setwebUrl] = React.useState("");
+  const [activeOrder, setactiveOrder] = React.useState("");
 
-  const LaunchPayPalOrder = async (_order, _onSuccess) => {
+  const ref = React.useRef();
+
+  const LaunchPayPalOrder = async (_order) => {
     try {
-      // console.log("props", props.route);
-      // var newOder = {
-      //   _type: "order",
-      //   items: [...globalStore.cart],
-      //   totPrice: _totPrice,
-      //   clientEmail: clientEmail,
-      //   clientAddress: clientAddress,
-      //   clientNotes: clientNotes,
-      //   orderNumber:
-      //     globalStore.profile.code.substring(0, 3).toUpperCase() +
-      //     generateUniqueOrderNum(),
-      // };
-      console.log("order for paypal ", _order);
+      // console.log("order for paypal ", _order);
       const orderDetails = PayPalRepository.getOrderDetails(
         "Ordine #" + _order.orderNumber,
         "Recapito Email " +
@@ -66,35 +58,28 @@ function OrderConfirmPanel() {
       );
       // console.log("generateToken", token);
       const res = await PayPalRepository.createOrder(orderDetails, token);
-      // console.log("createOrder res", res);
+      console.log("createOrder res", res);
+      setactiveOrder(_order);
+      return res;
+      // _dispatch(setState({ isLoading: false }));
 
-      if (!!res?.links) {
-        const findUrl = res.links.find((data) => data?.rel == "approve");
-        //window.open(findUrl.href, "_blank", "width=500,height=700");
-        setwebUrl(findUrl.href);
-      }
+      // if (!!res?.links) {
+      //   const findUrl = res.links.find((data) => data?.rel == "approve");
+      //   //window.open(findUrl.href, "_blank", "width=500,height=700");
+      //   setwebUrl(findUrl.href);
+      // }
     } catch (error) {
       console.log("onLoad, paypal ", error);
     }
   };
 
-  const onUrlChange = (event) => {
-    const iframe = event.target;
-    const url = iframe.contentWindow.location.href; // full URL
-    // console.log("onUrlChange webviewState ", webviewState);
-    if (url.includes("https://example.com/cancel")) {
-      clearPaypalState();
-      return;
-    }
-    if (url.includes("https://example.com/return")) {
-      // const urlValues = queryString.parseUrl(webviewState.url);
-      // console.log('my urls value', urlValues);
-      // const {token} = urlValues.query;
-      // if (!!token) {
-      // }
-      paymentSucess("");
-      return;
-    }
+  const onUrlChange = (event, _ref) => {
+    event.target.addEventListener("load", (_e) => {
+      console.log("we got a notification on i message loading");
+      console.log(_e.target);
+      console.log(_e.target.contentWindow.document);
+      // localStorage.setItem("iframetarget", _e.target);
+    });
   };
   const paymentSucess = async (_order) => {
     try {
@@ -103,14 +88,15 @@ function OrderConfirmPanel() {
       console.log("error raised in payment capture", error);
     }
   };
-  const clearPaypalState = () => {
-    setwebUrl(null);
-  };
+  const clearPaypalState = () => {};
+
+  React.useEffect(() => {
+    return () => {};
+  }, []);
 
   return (
     <Box flex="4" p="4" bg="gray.50" overflowY={"auto"}>
       <Card
-        h={"100%"}
         border={"1px"}
         borderRight={"4px"}
         borderBottom={"4px"}
@@ -202,67 +188,76 @@ function OrderConfirmPanel() {
                 globalStore.cart[0].activeVariantCurrText}
             </Heading>
 
-            <Button
-              variant={"solid"}
-              bg={"green.300"}
-              border={"1px"}
-              borderRight={"4px"}
-              borderBottom={"4px"}
-              leftIcon={<Icon as={FaPaypal}></Icon>}
-              onClick={() => {
-                //check required fields
-                if (clientEmail == "") {
-                  toast({
-                    title: "Campi non validi!",
-                    description: "Email non valida",
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
+            <PayPalScriptProvider
+              options={{
+                clientId: globalStore.profile.ppClientId,
+                currency: globalStore.cart[0].activeVariantCurr,
+                intent: "capture",
+              }}
+            >
+              <PayPalButtons
+                style={{ shape: "sharp", layout: "vertical" }}
+                createOrder={async (data, actions) => {
+                  // This executes only if onClick passesvar
+                  var _totPrice = 0;
+                  (globalStore.cart ?? []).forEach((_item) => {
+                    // console.log("cart item ", _item);
+                    _totPrice += _item.activeVariantPrice;
                   });
-                  return;
-                }
-                if (clientAddress == "") {
-                  toast({
-                    title: "Campi non validi!",
-                    description: "Indirizzo non valido",
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
-                  });
-                  return;
-                }
+                  (globalStore.profile.additionalCosts ?? []).forEach(
+                    (_item) => {
+                      // console.log("cart item ", _item);
+                      _totPrice += _item.price;
+                    }
+                  );
 
-                //get total
-                var _totPrice = 0;
-                (globalStore.cart ?? []).forEach((_item) => {
-                  // console.log("cart item ", _item);
-                  _totPrice += _item.activeVariantPrice;
-                });
+                  var newOder = {
+                    _type: "order",
+                    items: [...globalStore.cart],
+                    totPrice: _totPrice,
+                    clientEmail: clientEmail,
+                    clientAddress: clientAddress,
+                    clientNotes: clientNotes,
+                    orderNumber:
+                      globalStore.profile.code.substring(0, 3).toUpperCase() +
+                      generateUniqueOrderNum(),
+                  };
 
-                (globalStore.profile.additionalCosts ?? []).forEach((_item) => {
-                  // console.log("cart item ", _item);
-                  _totPrice += _item.price;
-                });
-
-                //get email
-                //get address
-                //launch paypal
-                //if payment is successful
-                //create order
-                var newOder = {
-                  _type: "order",
-                  items: [...globalStore.cart],
-                  totPrice: _totPrice,
-                  clientEmail: clientEmail,
-                  clientAddress: clientAddress,
-                  clientNotes: clientNotes,
-                  orderNumber:
-                    globalStore.profile.code.substring(0, 3).toUpperCase() +
-                    generateUniqueOrderNum(),
-                };
-
-                LaunchPayPalOrder(newOder, () => {
-                  createDocument(newOder, () => {
+                  var order = await LaunchPayPalOrder(newOder);
+                  console.log(order.id);
+                  return order.id;
+                }}
+                onClick={(data, actions) => {
+                  if (clientEmail == "") {
+                    toast({
+                      title: "Campi non validi!",
+                      description: "Email non valida",
+                      status: "error",
+                      duration: 9000,
+                      isClosable: true,
+                    });
+                    return actions.reject();
+                  }
+                  if (clientAddress == "") {
+                    toast({
+                      title: "Campi non validi!",
+                      description: "Indirizzo non valido",
+                      status: "error",
+                      duration: 9000,
+                      isClosable: true,
+                    });
+                    return actions.reject();
+                  }
+                  // Allow PayPal to continue
+                  return actions.resolve();
+                }}
+                onApprove={() => {
+                  //check if we can see the order object
+                  console.log(
+                    "PAYMENT SUCCESFUL, HERE YOUR ORDER ",
+                    activeOrder
+                  );
+                  createDocument(activeOrder, () => {
                     toast({
                       title: "Ordine creato con successo!",
                       description: "",
@@ -270,22 +265,27 @@ function OrderConfirmPanel() {
                       duration: 9000,
                       isClosable: true,
                     });
+                    setactiveOrder({});
                     _dispatch(
                       setState({
                         cart: [],
                         centerNavigation: "thanksOrder",
-                        lastOrder: newOder,
+                        lastOrder: activeOrder,
                       })
                     );
                   });
-                });
-              }}
-              p={1}
-            >
-              Paga con PayPal o Carta
-            </Button>
-            {webUrl ? (
-              <Flex
+                }}
+                onCancel={() => {
+                  //do nothing for now
+                }}
+                onError={(_err) => {
+                  console.log("paypal err", _err);
+                }}
+              ></PayPalButtons>
+            </PayPalScriptProvider>
+
+            {/* {webUrl ? (
+              <Box
                 position="fixed"
                 inset="0"
                 bg="white"
@@ -293,11 +293,31 @@ function OrderConfirmPanel() {
                 align="center"
                 justify="center"
               >
-                <iframe src={webUrl} onLoad={onUrlChange} />
-              </Flex>
+                <Flex>
+                  <Box flex={2}></Box>
+                  <Box flex={1}>
+                    <Button
+                      variant={"ghost"}
+                      leftIcon={<CloseIcon></CloseIcon>}
+                      onClick={() => {
+                        clearPaypalState();
+                      }}
+                    >
+                      {""}
+                    </Button>
+                  </Box>
+                </Flex>
+                <iframe
+                  id="paymentFrame"
+                  src={webUrl}
+                  onLoad={(e) => onUrlChange(e, ref)}
+                  style={{ width: "100%", height: "100%", border: "none" }}
+                  ref={ref}
+                />
+              </Box>
             ) : (
               <></>
-            )}
+            )} */}
           </Box>
         </Flex>
       </Card>

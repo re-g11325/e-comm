@@ -23,6 +23,7 @@ const apiQuery = (_url, _method, _body, _onSuccess, _onFail) => {
   })
     .then((response) => response.json())
     .then((result) => {
+      // console.log("did we arrive to the result?", result);
       _onSuccess(result);
     })
     .catch((error) => {
@@ -65,6 +66,10 @@ function createSanityQuery(filterObject, fields = ["..."]) {
   return query;
 }
 const getDocumentCommand = (_document, _fields = ["..."]) => {
+  // console.log(
+  //   "getting document command",
+  //   createSanityQuery(_document, _fields)
+  // );
   return encodeURIComponent(`${createSanityQuery(_document, _fields)}`);
 };
 const getProfilesCommand = (_document, _fields = ["..."]) => {
@@ -194,7 +199,7 @@ export const getDocument = (_document, _onSuccess, _fields = ["..."]) => {
       //let resultedUser = result.result[0];
       _onSuccess(result.result);
     },
-    (error) => console.error(error)
+    (error) => console.log(error)
   );
 };
 export const getProfiles = (_document, _onSuccess, _fields = ["..."]) => {
